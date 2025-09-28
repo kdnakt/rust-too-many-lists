@@ -2,7 +2,13 @@
 #[derive(Debug)]
 pub enum List {
     Empty,
-    Elem(i32, Box<List>),
+    More(Box<Node>),
+}
+
+#[derive(Debug)]
+struct Node {
+    elem: i32,
+    next: List,
 }
 
 #[cfg(test)]
@@ -11,7 +17,16 @@ mod tests {
 
     #[test]
     fn it_works() {
-        let list: List = List::Elem(1, Box::new(List::Elem(2, Box::new(List::Empty))));
+        let list: List = List::More(Box::new(Node {
+            elem: 1,
+            next: List::More(Box::new(Node {
+                elem: 2,
+                next: List::More(Box::new(Node {
+                    elem: 3,
+                    next: List::Empty,
+                })),
+            })),
+        }));
         println!("{:?}", list);
     }
 }
