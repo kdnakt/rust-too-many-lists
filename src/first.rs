@@ -1,6 +1,11 @@
 
 #[derive(Debug)]
-pub enum List {
+pub struct List {
+    head: Link,
+}
+
+#[derive(Debug)]
+enum Link {
     Empty,
     More(Box<Node>),
 }
@@ -17,16 +22,17 @@ mod tests {
 
     #[test]
     fn it_works() {
-        let list: List = List::More(Box::new(Node {
-            elem: 1,
-            next: List::More(Box::new(Node {
-                elem: 2,
-                next: List::More(Box::new(Node {
-                    elem: 3,
-                    next: List::Empty,
-                })),
+        let list = List {
+            head: Link::More(Box::new(Node {
+                elem: 1,
+                next: List {
+                    head: Link::More(Box::new(Node {
+                        elem: 2,
+                        next: List { head: Link::Empty },
+                    })),
+                },
             })),
-        }));
+        };
         println!("{:?}", list);
     }
 }
