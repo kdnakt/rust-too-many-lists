@@ -4,6 +4,12 @@ pub struct List {
     head: Link,
 }
 
+impl List {
+    pub fn new() -> Self {
+        List { head: Link::Empty }
+    }
+}
+
 #[derive(Debug)]
 enum Link {
     Empty,
@@ -28,7 +34,7 @@ mod tests {
                 next: List {
                     head: Link::More(Box::new(Node {
                         elem: 2,
-                        next: List { head: Link::Empty },
+                        next: List::new(),
                     })),
                 },
             })),
