@@ -34,5 +34,25 @@ mod tests {
             })),
         };
         println!("{:?}", list);
+        match list {
+            List {
+                head: Link::More(boxed_node),
+            } => {
+                assert_eq!(boxed_node.elem, 1);
+                match boxed_node.next {
+                    List {
+                        head: Link::More(boxed_node2),
+                    } => {
+                        assert_eq!(boxed_node2.elem, 2);
+                        match boxed_node2.next {
+                            List { head: Link::Empty } => {}
+                            _ => panic!("Expected empty list"),
+                        }
+                    }
+                    _ => panic!("Expected second node"),
+                }
+            }
+            _ => panic!("Expected first node"),
+        }
     }
 }
