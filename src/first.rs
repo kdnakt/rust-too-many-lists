@@ -40,12 +40,10 @@ mod tests {
         let list = List {
             head: Link::More(Box::new(Node {
                 elem: 1,
-                next: List {
-                    head: Link::More(Box::new(Node {
-                        elem: 2,
-                        next: List::new(),
-                    })),
-                },
+                next: Link::More(Box::new(Node {
+                    elem: 2,
+                    next: Link::Empty,
+                })),
             })),
         };
         println!("{:?}", list);
@@ -55,15 +53,13 @@ mod tests {
             } => {
                 assert_eq!(boxed_node.elem, 1);
                 match boxed_node.next {
-                    List {
-                        head: Link::More(boxed_node2),
-                    } => {
-                        assert_eq!(boxed_node2.elem, 2);
-                        match boxed_node2.next {
-                            List { head: Link::Empty } => {}
-                            _ => panic!("Expected empty list"),
+                    Link::More(boxed_node) => {
+                        assert_eq!(boxed_node.elem, 2);
+                        match boxed_node.next {
+                            Link::Empty => {}
+                            _ => panic!("Expected empty link"),
                         }
-                    }
+                    },
                     _ => panic!("Expected second node"),
                 }
             }
