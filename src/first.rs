@@ -69,7 +69,7 @@ mod tests {
                             Link::Empty => {}
                             _ => panic!("Expected empty link"),
                         }
-                    },
+                    }
                     _ => panic!("Expected second node"),
                 }
             }
