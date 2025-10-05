@@ -35,6 +35,17 @@ enum Link {
     More(Box<Node>),
 }
 
+impl Drop for Link {
+    fn drop(&mut self) {
+        match *self {
+            Link::Empty => {} // Done!
+            Link::More(ref mut boxed_node) => {
+                drop(boxed_node);
+            }
+        }
+    }
+}
+
 #[derive(Debug)]
 struct Node {
     elem: i32,
