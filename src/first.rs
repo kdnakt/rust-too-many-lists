@@ -29,21 +29,19 @@ impl List {
     }
 }
 
+impl Drop for List {
+    fn drop(&mut self) {
+        let mut cur_link = mem::replace(&mut self.head, Link::Empty);
+        while let Link::More(mut boxed_node) = cur_link {
+            cur_link = mem::replace(&mut boxed_node.next, Link::Empty);
+        }
+    }
+}
+
 #[derive(Debug)]
 enum Link {
     Empty,
     More(Box<Node>),
-}
-
-impl Drop for Link {
-    fn drop(&mut self) {
-        match *self {
-            Link::Empty => {} // Done!
-            Link::More(ref mut boxed_node) => {
-                drop(boxed_node);
-            }
-        }
-    }
 }
 
 #[derive(Debug)]
@@ -68,12 +66,12 @@ mod tests {
             })),
         };
         println!("{:?}", list);
-        match list {
+        match &list {
             List {
                 head: Link::More(boxed_node),
             } => {
                 assert_eq!(boxed_node.elem, 1);
-                match boxed_node.next {
+                match &boxed_node.next {
                     Link::More(boxed_node) => {
                         assert_eq!(boxed_node.elem, 2);
                         match boxed_node.next {
