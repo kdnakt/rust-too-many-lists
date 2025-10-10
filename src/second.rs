@@ -1,6 +1,6 @@
 #[derive(Debug)]
-pub struct List {
-    head: Link,
+pub struct List<T> {
+    head: Link<T>,
 }
 
 impl List {
@@ -33,12 +33,12 @@ impl Drop for List {
     }
 }
 
-type Link = Option<Box<Node>>;
+type Link<T> = Option<Box<Node<T>>>;
 
 #[derive(Debug)]
-struct Node {
-    elem: i32,
-    next: Link,
+struct Node<T> {
+    elem: T,
+    next: Link<T>,
 }
 
 #[cfg(test)]
