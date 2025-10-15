@@ -9,6 +9,10 @@ pub struct Iter<'a, T> {
     next: Option<&'a Node<T>>,
 }
 
+pub struct IterMut<'a, T> {
+    next: Option<&'a mut Node<T>>,
+}
+
 impl<T> List<T> {
     pub fn new() -> Self {
         List { head: None }
