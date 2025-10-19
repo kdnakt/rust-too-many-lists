@@ -36,6 +36,27 @@ impl<T> List<T> {
             head: self.head.as_ref().and_then(|node| node.next.clone()),
         }
     }
+
+    pub fn iter(&self) -> Iter<'_, T> {
+        Iter {
+            next: self.head.as_deref(),
+        }
+    }
+}
+
+impl<'a, T> Iterator for Iter<'a, T> {
+    type Item = &'a T;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        self.next.map(|node| {
+            self.next = node.next.as_deref();
+            &node.elem
+        })
+    }
+}
+
+pub struct Iter<'a, T> {
+    next: Option<&'a Node<T>>,
 }
 
 #[cfg(test)]
@@ -58,5 +79,16 @@ mod test {
 
         let tail3 = tail2.tail();
         assert_eq!(tail3.head(), None);
+    }
+
+    #[test]
+    fn iter() {
+        let list = List::new().prepend(1).prepend(2).prepend(3);
+
+        let mut iter = list.iter();
+        assert_eq!(iter.next(), Some(&3));
+        assert_eq!(iter.next(), Some(&2));
+        assert_eq!(iter.next(), Some(&1));
+        assert_eq!(iter.next(), None);
     }
 }
