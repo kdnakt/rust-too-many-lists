@@ -59,6 +59,19 @@ pub struct Iter<'a, T> {
     next: Option<&'a Node<T>>,
 }
 
+impl<T> Drop for List<T> {
+    fn drop(&mut self) {
+        let mut head = self.head.take();
+        while let Some(mut node) = head {
+            if let Ok(mut_node) = Rc::try_unwrap(node) {
+                head = mut_node.next;
+            } else {
+                break;
+            }
+        }
+    }
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
