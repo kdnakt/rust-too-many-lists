@@ -32,3 +32,12 @@ impl<T> Node<T> {
         }))
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    #[test]
+    fn it_works() {
+        let _list: List<i32> = List::new();
+    }
+}
