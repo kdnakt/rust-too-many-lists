@@ -28,6 +28,21 @@ impl<T> List<T> {
             }
         }
     }
+
+    fn pop_front(&mut self) -> Option<T> {
+        self.head.take().map(|old_head| {
+            match old_head.borrow_mut().next.take() {
+                Some(new_head) => {
+                    new_head.borrow_mut().prev.take();
+                    self.head = Some(new_head);
+                }
+                None => {
+                    self.tail.take();
+                }
+            }
+            Rc::try_unwrap(old_head).ok().unwrap().into_inner().elem
+        })
+    }
 }
 
 type Link<T> = Option<Rc<RefCell<Node<T>>>>;
@@ -57,14 +72,9 @@ mod tests {
         assert!(list.head.is_none());
         assert!(list.tail.is_none());
         list.push_front(1);
-        assert!(list.head.is_some());
-        assert!(list.head.as_ref().unwrap().borrow().elem == 1);
-        assert!(list.tail.is_some());
-        assert!(list.tail.as_ref().unwrap().borrow().elem == 1);
         list.push_front(2);
-        assert!(list.head.is_some());
-        assert!(list.head.as_ref().unwrap().borrow().elem == 2);
-        assert!(list.tail.is_some());
-        assert!(list.tail.as_ref().unwrap().borrow().elem == 1);
+        assert_eq!(list.pop_front(), Some(2));
+        assert_eq!(list.pop_front(), Some(1));
+        assert_eq!(list.pop_front(), None);
     }
 }
