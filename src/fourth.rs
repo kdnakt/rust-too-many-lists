@@ -134,7 +134,7 @@ mod tests {
     }
 
     #[test]
-    fn peek_front_works() {
+    fn peek_works() {
         let mut list: List<i32> = List::new();
         assert!(list.peek_front().is_none());
         assert!(list.peek_back().is_none());
