@@ -1,7 +1,9 @@
+use std::ptr;
 
-pub struct List<'a, T> {
+
+pub struct List<T> {
     head: Link<T>,
-    tail: Option<&'a mut Node<T>>,
+    tail: *mut Node<T>,
 }
 
 type Link<T> = Option<Box<Node<T>>>;
@@ -11,38 +13,36 @@ struct Node<T> {
     next: Link<T>,
 }
 
-impl<'a, T> List<'a, T> {
+impl<T> List<T> {
     pub fn new() -> Self {
         List {
             head: None,
-            tail: None,
+            tail: ptr::null_mut(),
         }
     }
 
-    pub fn push(&'a mut self, elem: T) {
-        let new_tail = Box::new(Node { elem, next: None });
+    pub fn push(&mut self, elem: T) {
+        let mut new_tail = Box::new(Node { elem, next: None });
+        let raw_tail: *mut _ = &mut *new_tail;
 
-        let new_tail = match self.tail.take() {
-            Some(old_tail) => {
-                old_tail.next = Some(new_tail);
-                old_tail.next.as_deref_mut()
+        if !self.tail.is_null() {
+            unsafe {
+                (*self.tail).next = Some(new_tail);
             }
-            None => {
-                self.head = Some(new_tail);
-                self.head.as_deref_mut()
-            }
-        };
+        } else {
+            self.head = Some(new_tail);
+        }
 
-        self.tail = new_tail;
+        self.tail = raw_tail;
     }
 
-    pub fn pop(&'a mut self) -> Option<T> {
+    pub fn pop(&mut self) -> Option<T> {
         self.head.take().map(|head| {
             let head = *head;
             self.head = head.next;
 
             if self.head.is_none() {
-                self.tail = None;
+                self.tail = ptr::null_mut();
             }
 
             head.elem
