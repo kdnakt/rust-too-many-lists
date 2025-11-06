@@ -71,6 +71,18 @@ impl<T> List<T> {
             }
         }
     }
+
+    pub fn peek(&self) -> Option<&T> {
+        unsafe {
+            self.head.as_ref().map(|node| &node.elem)
+        }
+    }
+
+    pub fn peek_mut(&mut self) -> Option<&mut T> {
+        unsafe {
+            self.head.as_mut().map(|node| &mut node.elem)
+        }
+    }
 }
 
 pub struct IntoIter<T>(List<T>);
@@ -133,5 +145,43 @@ mod tests {
         assert_eq!(list.pop(), Some(3));
         assert_eq!(list.pop(), Some(4));
         assert_eq!(list.pop(), None);
+    }
+
+    #[test]
+    fn peek_works() {
+        let mut list = List::new();
+        assert!(list.peek().is_none());
+        assert!(list.peek_mut().is_none());
+        list.push(1);
+        list.push(2);
+        list.push(3);
+        assert!(list.pop() == Some(1));
+        list.push(4);
+        assert!(list.pop() == Some(2));
+        list.push(5);
+        assert!(list.peek() == Some(&3));
+        list.push(6);
+        list.peek_mut().map(|value| {
+            *value *= 10;
+        });
+        assert!(list.peek() == Some(&30));
+        assert!(list.pop() == Some(30));
+
+        for elem in list.iter_mut() {
+            *elem *= 100;
+        }
+
+        let mut iter = list.iter();
+        assert!(iter.next() == Some(&400));
+        assert!(iter.next() == Some(&500));
+        assert!(iter.next() == Some(&600));
+        assert!(iter.next() == None);
+
+        assert_eq!(list.pop(), Some(400));
+        list.peek_mut().map(|value| {
+            *value *= 10;
+        });
+        assert!(list.peek() == Some(&5000));
+        list.push(7);
     }
 }
