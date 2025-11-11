@@ -1,3 +1,4 @@
+use std::ptr::NonNull;
 
 pub struct LinkedList<T> {
     front: Link<T>,
@@ -5,7 +6,7 @@ pub struct LinkedList<T> {
     len: usize,
 }
 
-type Link<T> = *mut Node<T>;
+type Link<T> = Option<NonNull<Node<T>>>;
 
 struct Node<T> {
     front: Link<T>,
@@ -13,12 +14,21 @@ struct Node<T> {
     elem: T,
 }
 
-pub struct NonNull<T> {
-    pointer: *const T,
+impl<T> LinkedList<T> {
+    pub fn new() -> Self {
+        LinkedList {
+            front: None,
+            back: None,
+            len: 0,
+        }
+    }
 }
 
-impl<T> NonNull<T> {
-    pub unsafe fn new_unchecked(ptr: *mut T) -> Self {
-        unsafe { NonNull { pointer: ptr as *const T } }
+#[cfg(test)]
+mod tests {
+    use super::*;
+    #[test]
+    fn it_works() {
+        let mut list: LinkedList<i32> = LinkedList::new();
     }
 }
