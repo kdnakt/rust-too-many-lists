@@ -4,6 +4,7 @@ pub struct LinkedList<T> {
     front: Link<T>,
     back: Link<T>,
     len: usize,
+    _marker: PhantomData<T>,
 }
 
 type Link<T> = Option<NonNull<Node<T>>>;
@@ -12,7 +13,6 @@ struct Node<T> {
     front: Link<T>,
     back: Link<T>,
     elem: T,
-    _marker: PhantomData<T>,
 }
 
 impl<T> LinkedList<T> {
@@ -21,6 +21,7 @@ impl<T> LinkedList<T> {
             front: None,
             back: None,
             len: 0,
+            _marker: PhantomData,
         }
     }
 }
