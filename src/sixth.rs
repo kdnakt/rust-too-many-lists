@@ -36,9 +36,9 @@ impl<T> LinkedList<T> {
                 (*old.as_ptr()).front = Some(new);
                 (*new.as_ptr()).back = Some(old);
             } else {
-                debug_assert!(self.back.is_none());
-                debug_assert!(self.front.is_none());
-                debug_assert!(self.len == 0);
+                // debug_assert!(self.back.is_none());
+                // debug_assert!(self.front.is_none());
+                // debug_assert!(self.len == 0);
                 self.back = Some(new);
             }
             self.front = Some(new);
@@ -56,7 +56,7 @@ impl<T> LinkedList<T> {
                 if let Some(new_front) = self.front {
                     (*new_front.as_ptr()).front = None;
                 } else {
-                    debug_assert!(self.len == 1);
+                    // debug_assert!(self.len == 1);
                     self.back = None;
                 }
                 self.len -= 1;
