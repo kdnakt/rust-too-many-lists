@@ -68,6 +68,24 @@ impl<T> LinkedList<T> {
     pub fn len(&self) -> usize {
         self.len
     }
+
+    pub fn front(&self) -> Option<&T> {
+        unsafe {
+            Some(&(*self.front?.as_ptr()).elem)
+        }
+    }
+
+    pub fn front_mut(&mut self) -> Option<&mut T> {
+        unsafe {
+            self.front.map(|node| &mut (*node.as_ptr()).elem)
+        }
+    }
+}
+
+impl<T> Drop for LinkedList<T> {
+    fn drop(&mut self) {
+        while let Some(_) = self.pop_front() {}
+    }
 }
 
 #[cfg(test)]
