@@ -127,6 +127,10 @@ impl<'a, T> Iterator for Iter<'a, T> {
             None
         }
     }
+
+    fn size_hint(&self) -> (usize, Option<usize>) {
+        (self.len, Some(self.len))
+    }
 }
 
 #[cfg(test)]
