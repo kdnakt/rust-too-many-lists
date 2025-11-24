@@ -112,6 +112,27 @@ impl<T> LinkedList<T> {
             })
         }
     }
+
+    pub fn push_back(&mut self, elem: T) {
+        unsafe {
+            let new = NonNull::new_unchecked(Box::into_raw(Box::new(Node {
+                front: None,
+                back: None,
+                elem,
+            })));
+            if let Some(old) = self.back {
+                (*old.as_ptr()).back = Some(new);
+                (*new.as_ptr()).front = Some(old);
+            } else {
+                // debug_assert!(self.front.is_none());
+                // debug_assert!(self.back.is_none());
+                // debug_assert!(self.len == 0);
+                self.front = Some(new);
+            }
+            self.back = Some(new);
+            self.len += 1;
+        }
+    }
 }
 
 impl<T> Drop for LinkedList<T> {
@@ -253,6 +274,21 @@ mod tests {
         assert_eq!(list.pop_front(), Some(20));
         assert_eq!(list.len(), 0);
         assert_eq!(list.pop_front(), None);
+        assert_eq!(list.len(), 0);
+
+        list.push_back(60);
+        assert_eq!(list.len(), 1);
+        list.push_back(70);
+        assert_eq!(list.len(), 2);
+        list.push_back(80);
+        assert_eq!(list.len(), 3);
+        assert_eq!(list.pop_back(), Some(80));
+        assert_eq!(list.len(), 2);
+        assert_eq!(list.pop_front(), Some(60));
+        assert_eq!(list.len(), 1);
+        assert_eq!(list.pop_back(), Some(70));
+        assert_eq!(list.len(), 0);
+        assert_eq!(list.pop_back(), None);
         assert_eq!(list.len(), 0);
     }
 }
