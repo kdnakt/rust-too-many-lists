@@ -1,4 +1,4 @@
-use std::{fmt::{Debug, Formatter}, marker::PhantomData, ptr::NonNull};
+use std::{fmt::{Debug, Formatter}, hash::Hash, marker::PhantomData, ptr::NonNull};
 
 pub struct LinkedList<T> {
     front: Link<T>,
@@ -178,6 +178,40 @@ impl<T> FromIterator<T> for LinkedList<T> {
 impl<T: Debug> Debug for LinkedList<T> {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         f.debug_list().entries(self).finish()
+    }
+}
+
+impl<T: PartialEq> PartialEq for LinkedList<T> {
+    fn eq(&self, other: &Self) -> bool {
+        self.len() == other.len()
+            && self.iter().eq(other)
+    }
+
+    fn ne(&self, other: &Self) -> bool {
+        self.len() != other.len()
+            || self.iter().ne(other)
+    }
+}
+
+impl<T: Eq> Eq for LinkedList<T> {}
+
+impl<T: PartialOrd> PartialOrd for LinkedList<T> {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        self.iter().partial_cmp(other)
+    }
+}
+
+impl<T: Ord> Ord for LinkedList<T> {
+    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+        self.iter().cmp(other)
+    }
+}
+
+impl<T: Hash> Hash for LinkedList<T> {
+    fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
+        for item in self {
+            item.hash(state);
+        }
     }
 }
 
