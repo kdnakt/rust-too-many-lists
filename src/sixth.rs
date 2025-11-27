@@ -318,6 +318,15 @@ impl<T> ExactSizeIterator for IntoIter<T> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    fn generate_test() -> LinkedList<i32> {
+        list_from(&[0, 1, 2, 3, 4, 5, 6])
+    }
+
+    fn list_from<T: Clone>(v: &[T]) -> LinkedList<T> {
+        v.iter().map(|x| (*x).clone()).collect()
+    }
+
     #[test]
     fn it_works() {
         let mut list: LinkedList<i32> = LinkedList::new();
@@ -370,5 +379,44 @@ mod tests {
         assert_eq!(list.len(), 0);
         assert_eq!(list.pop_back(), None);
         assert_eq!(list.len(), 0);
+    }
+
+    #[test]
+    fn test_basic() {
+        let mut list = LinkedList::new();
+        assert_eq!(list.pop_front(), None);
+        assert_eq!(list.pop_back(), None);
+        assert_eq!(list.pop_front(), None);
+        list.push_front(1);
+        assert_eq!(list.pop_back(), Some(1));
+        list.push_back(2);
+        list.push_back(3);
+        assert_eq!(list.len(), 2);
+        assert_eq!(list.pop_front(), Some(2));
+        assert_eq!(list.pop_front(), Some(3));
+        assert_eq!(list.pop_front(), None);
+        assert_eq!(list.len(), 0);
+        list.push_back(1);
+        list.push_back(3);
+        list.push_back(5);
+        list.push_back(7);
+        assert_eq!(list.pop_front(), Some(1));
+    }
+
+    #[test]
+    fn test_iterator() {
+        let m = generate_test();
+        for (i, el) in m.iter().enumerate() {
+            assert_eq!(*el, i as i32);
+        }
+
+        let mut n = LinkedList::new();
+        assert_eq!(n.iter().next(), None);
+        n.push_front(4);
+        let mut it = n.iter();
+        assert_eq!(it.size_hint(), (1, Some(1)));
+        assert_eq!(it.next().unwrap(), &4);
+        assert_eq!(it.size_hint(), (0, Some(0)));
+        assert_eq!(it.next(), None);
     }
 }
