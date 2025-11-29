@@ -90,6 +90,15 @@ impl<T> LinkedList<T> {
         }
     }
 
+    pub fn iter_mut(&mut self) -> IterMut<T> {
+        IterMut {
+            front: self.front,
+            back: self.back,
+            len: self.len,
+            _marker: PhantomData,
+        }
+    }
+
     pub fn into_iter(self) -> IntoIter<T> {
         IntoIter { list: self }
     }
@@ -228,6 +237,13 @@ pub struct Iter<'a, T> {
     _marker: PhantomData<&'a T>,
 }
 
+pub struct IterMut<'a, T> {
+    front: Link<T>,
+    back: Link<T>,
+    len: usize,
+    _marker: PhantomData<&'a mut T>,
+}
+
 impl<'a, T> IntoIterator for &'a LinkedList<T> {
     type IntoIter = Iter<'a, T>;
     type Item = &'a T;
@@ -246,6 +262,35 @@ impl<'a, T> Iterator for Iter<'a, T> {
                 self.len -= 1;
                 self.front = (*node.as_ptr()).back;
                 &(*node.as_ptr()).elem
+            })
+        } else {
+            None
+        }
+    }
+
+    fn size_hint(&self) -> (usize, Option<usize>) {
+        (self.len, Some(self.len))
+    }
+}
+
+impl<'a, T> IntoIterator for &'a mut LinkedList<T> {
+    type IntoIter = IterMut<'a, T>;
+    type Item = &'a mut T;
+
+    fn into_iter(self) -> Self::IntoIter {
+        self.iter_mut()
+    }
+}
+
+impl<'a, T> Iterator for IterMut<'a, T> {
+    type Item = &'a mut T;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        if self.len > 0 {
+            self.front.map(|node| unsafe {
+                self.len -= 1;
+                self.front = (*node.as_ptr()).back;
+                &mut (*node.as_ptr()).elem
             })
         } else {
             None
@@ -444,5 +489,34 @@ mod tests {
         for (i, el) in m.iter().rev().enumerate() {
             assert_eq!(6 - i as i32, *el);
         }
+        let mut n = LinkedList::new();
+        assert_eq!(n.iter().rev().next(), None);
+        n.push_front(4);
+        let mut it = n.iter().rev();
+        assert_eq!(it.size_hint(), (1, Some(1)));
+        assert_eq!(it.next().unwrap(), &4);
+        assert_eq!(it.size_hint(), (0, Some(0)));
+        assert_eq!(it.next(), None);
+    }
+
+    #[test]
+    fn test_mut_iter() {
+        let mut m = generate_test();
+        let mut len = m.len();
+        for (i, el) in m.iter_mut().enumerate() {
+            assert_eq!(i as i32, *el);
+            len -= 1;
+        }
+        assert_eq!(len, 0);
+        let mut n = LinkedList::new();
+        assert_eq!(n.iter_mut().next(), None);
+        n.push_front(4);
+        n.push_back(5);
+        let mut it = n.iter_mut();
+        assert_eq!(it.size_hint(), (2, Some(2)));
+        assert!(it.next().is_some());
+        assert!(it.next().is_some());
+        assert_eq!(it.size_hint(), (0, Some(0)));
+        assert!(it.next().is_none());
     }
 }
