@@ -419,4 +419,30 @@ mod tests {
         assert_eq!(it.size_hint(), (0, Some(0)));
         assert_eq!(it.next(), None);
     }
+
+    #[test]
+    fn test_iterator_double_end() {
+        let mut n = LinkedList::new();
+        assert_eq!(n.iter().next(), None);
+        n.push_front(4);
+        n.push_front(3);
+        n.push_front(2);
+        let mut it = n.iter();
+        assert_eq!(it.size_hint(), (3, Some(3)));
+        assert_eq!(it.next().unwrap(), &2);
+        assert_eq!(it.size_hint(), (2, Some(2)));
+        assert_eq!(it.next_back().unwrap(), &4);
+        assert_eq!(it.size_hint(), (1, Some(1)));
+        assert_eq!(it.next_back().unwrap(), &3);
+        assert_eq!(it.next_back(), None);
+        assert_eq!(it.next(), None);
+    }
+
+    #[test]
+    fn test_rev_iter() {
+        let m = generate_test();
+        for (i, el) in m.iter().rev().enumerate() {
+            assert_eq!(6 - i as i32, *el);
+        }
+    }
 }
