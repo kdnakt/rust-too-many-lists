@@ -316,7 +316,27 @@ impl<'a, T> DoubleEndedIterator for Iter<'a, T> {
     }
 }
 
+impl<'a, T> DoubleEndedIterator for IterMut<'a, T> {
+    fn next_back(&mut self) -> Option<Self::Item> {
+        if self.len > 0 {
+            self.back.map(|node| unsafe {
+                self.len -= 1;
+                self.back = (*node.as_ptr()).front;
+                &mut (*node.as_ptr()).elem
+            })
+        } else {
+            None
+        }
+    }
+}
+
 impl<'a, T> ExactSizeIterator for Iter<'a, T> {
+    fn len(&self) -> usize {
+        self.len
+    }
+}
+
+impl<'a, T> ExactSizeIterator for IterMut<'a, T> {
     fn len(&self) -> usize {
         self.len
     }
@@ -517,6 +537,24 @@ mod tests {
         assert!(it.next().is_some());
         assert!(it.next().is_some());
         assert_eq!(it.size_hint(), (0, Some(0)));
+        assert!(it.next().is_none());
+    }
+
+    #[test]
+    fn test_iter_mut_double_end() {
+        let mut n = LinkedList::new();
+        assert!(n.iter_mut().next_back().is_none());
+        n.push_front(4);
+        n.push_front(5);
+        n.push_front(6);
+        let mut it = n.iter_mut();
+        assert_eq!(it.size_hint(), (3, Some(3)));
+        assert_eq!(*it.next().unwrap(), 6);
+        assert_eq!(it.size_hint(), (2, Some(2)));
+        assert_eq!(*it.next_back().unwrap(), 4);
+        assert_eq!(it.size_hint(), (1, Some(1)));
+        assert_eq!(*it.next_back().unwrap(), 5);
+        assert!(it.next_back().is_none());
         assert!(it.next().is_none());
     }
 }
