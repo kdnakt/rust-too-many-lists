@@ -557,4 +557,19 @@ mod tests {
         assert!(it.next_back().is_none());
         assert!(it.next().is_none());
     }
+
+    #[test]
+    fn test_eq() {
+        let mut n: LinkedList<u8> = list_from(&[]);
+        let mut m = list_from(&[]);
+        assert!(n == m);
+        n.push_front(1);
+        assert!(n != m);
+        m.push_back(1);
+        assert!(n == m);
+
+        let n = list_from(&[2, 3, 4]);
+        let m = list_from(&[1, 2, 3]);
+        assert!(n != m);
+    }
 }
