@@ -582,4 +582,36 @@ mod tests {
         assert!(n <= m);
         assert!(m >= n);
     }
+
+    #[test]
+    fn test_ord_nan() {
+        let nan = 0.0f64 / 0.0;
+        let m = list_from(&[nan]);
+        let n = list_from(&[nan]);
+        assert!(!(n < m));
+        assert!(!(m > n));
+        assert!(!(n <= m));
+        assert!(!(m >= n));
+
+        let n = list_from(&[nan]);
+        let one = list_from(&[1.0f64]);
+        assert!(!(n < one));
+        assert!(!(n > one));
+        assert!(!(n <= one));
+        assert!(!(n >= one));
+
+        let u = list_from(&[1.0f64, 2.0, nan]);
+        let v = list_from(&[1.0f64, 2.0, 3.0]);
+        assert!(!(u < v));
+        assert!(!(u > v));
+        assert!(!(u <= v));
+        assert!(!(u >= v));
+
+        let s = list_from(&[1.0f64, 2.0, 4.0, 2.0]);
+        let t = list_from(&[1.0f64, 2.0, 3.0, 2.0]);
+        assert!(!(s < t));
+        assert!(s > t);
+        assert!(!(s <= t));
+        assert!(s >= t);
+    }
 }
