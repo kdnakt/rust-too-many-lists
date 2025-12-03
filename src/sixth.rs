@@ -572,4 +572,14 @@ mod tests {
         let m = list_from(&[1, 2, 3]);
         assert!(n != m);
     }
+
+    #[test]
+    fn test_ord() {
+        let n = list_from(&[]);
+        let m = list_from(&[1, 2, 3]);
+        assert!(n < m);
+        assert!(m > n);
+        assert!(n <= m);
+        assert!(m >= n);
+    }
 }
