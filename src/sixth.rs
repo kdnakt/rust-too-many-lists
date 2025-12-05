@@ -380,6 +380,31 @@ impl<T> ExactSizeIterator for IntoIter<T> {
     }
 }
 
+
+unsafe impl<T: Send> Send for LinkedList<T> {}
+unsafe impl<T: Sync> Sync for LinkedList<T> {}
+
+unsafe impl<'a, T: Send> Send for Iter<'a, T> {}
+unsafe impl<'a, T: Sync> Sync for Iter<'a, T> {}
+
+unsafe impl<'a, T: Send> Send for IterMut<'a, T> {}
+unsafe impl<'a, T: Sync> Sync for IterMut<'a, T> {}
+
+#[allow(dead_code)]
+fn assert_properties() {
+    fn is_send<T: Send>() {}
+    fn is_sync<T: Sync>() {}
+
+    is_send::<LinkedList<u8>>();
+    is_sync::<LinkedList<u8>>();
+
+    is_send::<Iter<u8>>();
+    is_sync::<Iter<u8>>();
+
+    is_send::<IterMut<u8>>();
+    is_sync::<IterMut<u8>>();
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
