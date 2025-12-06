@@ -403,6 +403,13 @@ fn assert_properties() {
 
     is_send::<IterMut<u8>>();
     is_sync::<IterMut<u8>>();
+
+    /// ```compile_fail,E0308
+    /// use lists::sixth::IterMut;
+    /// 
+    /// fn iter_mut_covariant<'i, 'a, T>(x: IterMut<'i, &'static T>) -> IterMut<'i, &'a T> { x }
+    /// ```
+    fn iter_mut_covariant() {}
 }
 
 #[cfg(test)]
