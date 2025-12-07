@@ -426,6 +426,48 @@ pub struct CursorMut<'a, T> {
     index: Option<usize>,
 }
 
+impl<'a, T> CursorMut<'a, T> {
+    pub fn index(&self) -> Option<usize> {
+        self.index
+    }
+
+    pub fn move_next(&mut self) {
+        if let Some(cur) = self.cur {
+            unsafe {
+                self.cur = (*cur.as_ptr()).back;
+                if self.cur.is_some() {
+                    *self.index.as_mut().unwrap() += 1;
+                } else {
+                    self.index = None;
+                }
+            }
+        } else if !self.list.is_empty() {
+            self.cur = self.list.front;
+            self.index = Some(0);
+        } else {
+            // do nothing
+        }
+    }
+
+    pub fn move_prev(&mut self) {
+        if let Some(cur) = self.cur {
+            unsafe {
+                self.cur = (*cur.as_ptr()).front;
+                if self.cur.is_some() {
+                    *self.index.as_mut().unwrap() -= 1;
+                } else {
+                    self.index = None;
+                }
+            }
+        } else if !self.list.is_empty() {
+            self.cur = self.list.back;
+            self.index = Some(self.list.len() - 1);
+        } else {
+            // do nothing
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
