@@ -150,6 +150,14 @@ impl<T> LinkedList<T> {
     pub fn clear(&mut self) {
         while let Some(_) = self.pop_front() {}
     }
+
+    pub fn cursor_mut(&mut self) -> CursorMut<T> {
+        CursorMut {
+            cur: None,
+            list: self,
+            index: None,
+        }
+    }
 }
 
 impl<T> Default for LinkedList<T> {
@@ -410,6 +418,12 @@ fn assert_properties() {
     /// fn iter_mut_covariant<'i, 'a, T>(x: IterMut<'i, &'static T>) -> IterMut<'i, &'a T> { x }
     /// ```
     fn iter_mut_covariant() {}
+}
+
+pub struct CursorMut<'a, T> {
+    cur: Link<T>,
+    list: &'a mut LinkedList<T>,
+    index: Option<usize>,
 }
 
 #[cfg(test)]
