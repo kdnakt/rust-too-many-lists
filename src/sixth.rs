@@ -466,6 +466,28 @@ impl<'a, T> CursorMut<'a, T> {
             // do nothing
         }
     }
+
+    pub fn current(&mut self) -> Option<&mut T> {
+        unsafe {
+            self.cur.map(|node| &mut (*node.as_ptr()).elem)
+        }
+    }
+
+    pub fn peek_next(&self) -> Option<&mut T> {
+        unsafe {
+            self.cur
+                .and_then(|node| (*node.as_ptr()).back)
+                .map(|node| &mut (*node.as_ptr()).elem)
+        }
+    }
+
+    pub fn peek_prev(&self) -> Option<&mut T> {
+        unsafe {
+            self.cur
+                .and_then(|node| (*node.as_ptr()).front)
+                .map(|node| &mut (*node.as_ptr()).elem)
+        }
+    }
 }
 
 #[cfg(test)]
