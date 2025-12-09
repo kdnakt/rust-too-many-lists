@@ -488,6 +488,44 @@ impl<'a, T> CursorMut<'a, T> {
                 .map(|node| &mut (*node.as_ptr()).elem)
         }
     }
+
+    pub fn split_before(&mut self) -> LinkedList<T> {
+        if let Some(cur) = self.cur {
+            unsafe {
+                let old_len = self.list.len;
+                let old_idx = self.index.unwrap();
+                let prev = (*cur.as_ptr()).front;
+
+                let new_len = old_len - old_idx;
+                let new_front = self.cur;
+                let new_back = self.list.back;
+                let new_idx = Some(0);
+
+                let output_len = old_len - new_len;
+                let output_front = self.list.front;
+                let output_back = prev;
+
+                if let Some(prev) = prev {
+                    (*cur.as_ptr()).front = None;
+                    (*prev.as_ptr()).back = None;
+                }
+
+                self.list.len = new_len;
+                self.list.front = new_front;
+                self.list.back = new_back;
+                self.index = new_idx;
+
+                LinkedList {
+                    len: output_len,
+                    front: output_front,
+                    back: output_back,
+                    _marker: PhantomData,
+                }
+            }
+        } else {
+            std::mem::replace(self.list, LinkedList::new())
+        }
+    }
 }
 
 #[cfg(test)]
