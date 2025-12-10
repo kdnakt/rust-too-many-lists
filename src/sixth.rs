@@ -526,6 +526,44 @@ impl<'a, T> CursorMut<'a, T> {
             std::mem::replace(self.list, LinkedList::new())
         }
     }
+
+    pub fn splice_before(&mut self, mut input: LinkedList<T>) {
+        unsafe {
+            if input.is_empty() {
+                // do nothing
+            } else if let Some(cur) = self.cur {
+                if let Some(0) = self.index {
+                    (*cur.as_ptr()).front = input.back.take();
+                    (*input.back.unwrap().as_ptr()).back = Some(cur);
+                    self.list.front = input.front.take();
+                    *self.index.as_mut().unwrap() += input.len;
+                    self.list.len += input.len;
+                    input.len = 0;
+                } else {
+                    let prev = (*cur.as_ptr()).front.unwrap();
+                    let in_front = input.front.take().unwrap();
+                    let in_back = input.back.take().unwrap();
+
+                    (*prev.as_ptr()).back = Some(in_front);
+                    (*in_front.as_ptr()).front = Some(prev);
+                    (*cur.as_ptr()).front = Some(in_back);
+                    (*in_back.as_ptr()).back = Some(cur);
+
+                    *self.index.as_mut().unwrap() += input.len;
+                    self.list.len += input.len;
+                    input.len = 0;
+                }
+            } else if let Some(back) = self.list.back {
+                (*back.as_ptr()).back = input.front.take();
+                (*input.front.unwrap().as_ptr()).front = Some(back);
+                self.list.back = input.back.take();
+                self.list.len += input.len;
+                input.len = 0;
+            } else {
+                *self.list = input;
+            }
+        }
+    }
 }
 
 #[cfg(test)]
