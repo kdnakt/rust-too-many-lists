@@ -532,18 +532,17 @@ impl<'a, T> CursorMut<'a, T> {
             if input.is_empty() {
                 // do nothing
             } else if let Some(cur) = self.cur {
+                let in_front = input.front.take().unwrap();
+                let in_back = input.back.take().unwrap();
                 if let Some(prev) = (*cur.as_ptr()).front {
-                    let in_front = input.front.take().unwrap();
-                    let in_back = input.back.take().unwrap();
-
                     (*prev.as_ptr()).back = Some(in_front);
                     (*in_front.as_ptr()).front = Some(prev);
                     (*cur.as_ptr()).front = Some(in_back);
                     (*in_back.as_ptr()).back = Some(cur);
                 } else {
-                    (*cur.as_ptr()).front = input.back.take();
-                    (*input.back.unwrap().as_ptr()).back = Some(cur);
-                    self.list.front = input.front.take();
+                    (*cur.as_ptr()).front = Some(in_back);
+                    (*in_back.as_ptr()).back = Some(cur);
+                    self.list.front = Some(in_front);
                 }
                 *self.index.as_mut().unwrap() += input.len;
             } else if let Some(back) = self.list.back {
