@@ -527,6 +527,44 @@ impl<'a, T> CursorMut<'a, T> {
         }
     }
 
+    pub fn split_after(&mut self) -> LinkedList<T> {
+        if let Some(cur) = self.cur {
+            unsafe {
+                let old_len = self.list.len;
+                let old_idx = self.index.unwrap();
+                let next = (*cur.as_ptr()).back;
+
+                let new_len = old_idx + 1;
+                let new_front = self.list.front;
+                let new_back = self.cur;
+                let new_idx = Some(old_idx);
+
+                let output_len = old_len - new_len;
+                let output_front = next;
+                let output_back = self.list.back;
+
+                if let Some(next) = next {
+                    (*cur.as_ptr()).back = None;
+                    (*next.as_ptr()).front = None;
+                }
+
+                self.list.len = new_len;
+                self.list.back = new_back;
+                self.list.front = new_front;
+                self.index = new_idx;
+
+                LinkedList {
+                    len: output_len,
+                    front: output_front,
+                    back: output_back,
+                    _marker: PhantomData,
+                }
+            }
+        } else {
+            std::mem::replace(self.list, LinkedList::new())
+        }
+    }
+
     pub fn splice_before(&mut self, mut input: LinkedList<T>) {
         unsafe {
             if input.is_empty() {
