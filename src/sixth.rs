@@ -461,7 +461,7 @@ impl<'a, T> CursorMut<'a, T> {
             }
         } else if !self.list.is_empty() {
             self.cur = self.list.back;
-            self.index = Some(self.list.len() - 1);
+            self.index = Some(self.list.len - 1);
         } else {
             // do nothing
         }
