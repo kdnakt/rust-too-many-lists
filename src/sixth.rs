@@ -934,4 +934,15 @@ mod tests {
         assert_eq!(cursor.peek_prev(), Some(&mut 4));
         assert_eq!(cursor.index(), Some(4));
     }
+
+    #[test]
+    fn test_cursor_mut_insert() {
+        let mut m: LinkedList<i32> = LinkedList::new();
+        m.extend([1, 2, 3, 4, 5, 6]);
+        let mut cursor = m.cursor_mut();
+        cursor.move_next();
+        cursor.splice_before(Some(7).into_iter().collect());
+        cursor.splice_after(Some(8).into_iter().collect());
+        assert_eq!(m.iter().cloned().collect::<Vec<_>>(), vec![7, 1, 8, 2, 3, 4, 5, 6]);
+    }
 }
