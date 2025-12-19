@@ -590,9 +590,11 @@ impl<'a, T> CursorMut<'a, T> {
                 }
                 *self.index.as_mut().unwrap() += input.len;
             } else if let Some(back) = self.list.back {
-                (*back.as_ptr()).back = input.front.take();
-                (*input.front.unwrap().as_ptr()).front = Some(back);
-                self.list.back = input.back.take();
+                let in_front = input.front.take().unwrap();
+                let in_back = input.back.take().unwrap();
+                (*back.as_ptr()).back = Some(in_front);
+                (*in_front.as_ptr()).front = Some(back);
+                self.list.back = Some(in_back);
             } else {
                 std::mem::swap(self.list, &mut input);
             }
@@ -619,9 +621,12 @@ impl<'a, T> CursorMut<'a, T> {
                     self.list.back = Some(in_back);
                 }
             } else if let Some(front) = self.list.front {
-                (*front.as_ptr()).front = input.back.take();
-                (*input.back.unwrap().as_ptr()).back = Some(front);
-                self.list.front = input.front.take();
+                let in_front = input.front.take().unwrap();
+                let in_back = input.back.take().unwrap();
+
+                (*front.as_ptr()).front = Some(in_back);
+                (*in_back.as_ptr()).back = Some(front);
+                self.list.front = Some(in_front);
             } else {
                 std::mem::swap(self.list, &mut input);
             }
