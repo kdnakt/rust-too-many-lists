@@ -944,5 +944,16 @@ mod tests {
         cursor.splice_before(Some(7).into_iter().collect());
         cursor.splice_after(Some(8).into_iter().collect());
         assert_eq!(m.iter().cloned().collect::<Vec<_>>(), vec![7, 1, 8, 2, 3, 4, 5, 6]);
+        let mut cursor = m.cursor_mut();
+        cursor.move_next();
+        cursor.move_prev();
+        cursor.splice_before(Some(9).into_iter().collect());
+        cursor.splice_after(Some(10).into_iter().collect());
+        check_links(&m);
+        assert_eq!(m.iter().cloned().collect::<Vec<_>>(), vec![10, 7, 1, 8, 2, 3, 4, 5, 6, 9]);
+    }
+
+    fn check_links<T>(list: &LinkedList<T>) {
+        // would be good to do this
     }
 }
