@@ -942,7 +942,7 @@ mod tests {
 
     #[test]
     fn test_cursor_mut_insert() {
-        let mut m: LinkedList<i32> = LinkedList::new();
+        let mut m: LinkedList<u32> = LinkedList::new();
         m.extend([1, 2, 3, 4, 5, 6]);
         let mut cursor = m.cursor_mut();
         cursor.move_next();
@@ -956,6 +956,18 @@ mod tests {
         cursor.splice_after(Some(10).into_iter().collect());
         check_links(&m);
         assert_eq!(m.iter().cloned().collect::<Vec<_>>(), vec![10, 7, 1, 8, 2, 3, 4, 5, 6, 9]);
+
+        let mut cursor = m.cursor_mut();
+        cursor.move_next();
+        let mut p: LinkedList<u32> = LinkedList::new();
+        p.extend([100, 101, 102, 103]);
+        let mut q: LinkedList<u32> = LinkedList::new();
+        q.extend([200, 201, 202, 203]);
+        cursor.splice_after(p);
+        cursor.splice_before(q);
+        check_links(&m);
+        assert_eq!(m.iter().cloned().collect::<Vec<_>>(),
+            &[200, 201, 202, 203, 10, 100, 101, 102, 103, 7, 1, 8, 2, 3, 4, 5, 6, 9]);
     }
 
     fn check_links<T>(list: &LinkedList<T>) {
