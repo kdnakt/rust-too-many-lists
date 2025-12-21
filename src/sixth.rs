@@ -968,6 +968,27 @@ mod tests {
         check_links(&m);
         assert_eq!(m.iter().cloned().collect::<Vec<_>>(),
             &[200, 201, 202, 203, 10, 100, 101, 102, 103, 7, 1, 8, 2, 3, 4, 5, 6, 9]);
+
+        let mut cursor = m.cursor_mut();
+        cursor.move_next();
+        cursor.move_prev();
+        let tmp = cursor.split_before();
+        assert_eq!(m.into_iter().collect::<Vec<_>>(), &[]);
+        m = tmp;
+        let mut cursor = m.cursor_mut();
+        cursor.move_next();
+        cursor.move_next();
+        cursor.move_next();
+        cursor.move_next();
+        cursor.move_next();
+        cursor.move_next();
+        cursor.move_next();
+        let tmp = cursor.split_after();
+        assert_eq!(tmp.iter().cloned().collect::<Vec<_>>(),
+            &[102, 103, 7, 1, 8, 2, 3, 4, 5, 6, 9]);
+        check_links(&m);
+        assert_eq!(m.iter().cloned().collect::<Vec<_>>(),
+            &[200, 201, 202, 203, 10, 100, 101]);
     }
 
     fn check_links<T>(list: &LinkedList<T>) {
