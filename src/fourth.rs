@@ -162,7 +162,7 @@ impl<T> DoubleEndedIterator for IntoIter<T> {
 //             } else {
 //                 None
 //             };
-                
+
 //             elem
 //         })
 //     }

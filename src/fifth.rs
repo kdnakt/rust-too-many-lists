@@ -1,6 +1,5 @@
 use std::ptr;
 
-
 pub struct List<T> {
     head: Link<T>,
     tail: *mut Node<T>,
@@ -23,7 +22,10 @@ impl<T> List<T> {
 
     pub fn push(&mut self, elem: T) {
         unsafe {
-            let mut new_tail = Box::into_raw(Box::new(Node { elem, next: ptr::null_mut() }));
+            let mut new_tail = Box::into_raw(Box::new(Node {
+                elem,
+                next: ptr::null_mut(),
+            }));
 
             if !self.tail.is_null() {
                 (*self.tail).next = new_tail;
@@ -73,15 +75,11 @@ impl<T> List<T> {
     }
 
     pub fn peek(&self) -> Option<&T> {
-        unsafe {
-            self.head.as_ref().map(|node| &node.elem)
-        }
+        unsafe { self.head.as_ref().map(|node| &node.elem) }
     }
 
     pub fn peek_mut(&mut self) -> Option<&mut T> {
-        unsafe {
-            self.head.as_mut().map(|node| &mut node.elem)
-        }
+        unsafe { self.head.as_mut().map(|node| &mut node.elem) }
     }
 }
 

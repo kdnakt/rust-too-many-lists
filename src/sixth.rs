@@ -1,4 +1,9 @@
-use std::{fmt::{Debug, Formatter}, hash::Hash, marker::PhantomData, ptr::NonNull};
+use std::{
+    fmt::{Debug, Formatter},
+    hash::Hash,
+    marker::PhantomData,
+    ptr::NonNull,
+};
 
 pub struct LinkedList<T> {
     front: Link<T>,
@@ -70,15 +75,11 @@ impl<T> LinkedList<T> {
     }
 
     pub fn front(&self) -> Option<&T> {
-        unsafe {
-            Some(&(*self.front?.as_ptr()).elem)
-        }
+        unsafe { Some(&(*self.front?.as_ptr()).elem) }
     }
 
     pub fn front_mut(&mut self) -> Option<&mut T> {
-        unsafe {
-            self.front.map(|node| &mut (*node.as_ptr()).elem)
-        }
+        unsafe { self.front.map(|node| &mut (*node.as_ptr()).elem) }
     }
 
     pub fn iter(&self) -> Iter<T> {
@@ -200,13 +201,11 @@ impl<T: Debug> Debug for LinkedList<T> {
 
 impl<T: PartialEq> PartialEq for LinkedList<T> {
     fn eq(&self, other: &Self) -> bool {
-        self.len() == other.len()
-            && self.iter().eq(other)
+        self.len() == other.len() && self.iter().eq(other)
     }
 
     fn ne(&self, other: &Self) -> bool {
-        self.len() != other.len()
-            || self.iter().ne(other)
+        self.len() != other.len() || self.iter().ne(other)
     }
 }
 
@@ -388,7 +387,6 @@ impl<T> ExactSizeIterator for IntoIter<T> {
     }
 }
 
-
 unsafe impl<T: Send> Send for LinkedList<T> {}
 unsafe impl<T: Sync> Sync for LinkedList<T> {}
 
@@ -414,7 +412,7 @@ fn assert_properties() {
 
     /// ```compile_fail,E0308
     /// use lists::sixth::IterMut;
-    /// 
+    ///
     /// fn iter_mut_covariant<'i, 'a, T>(x: IterMut<'i, &'static T>) -> IterMut<'i, &'a T> { x }
     /// ```
     fn iter_mut_covariant() {}
@@ -468,9 +466,7 @@ impl<'a, T> CursorMut<'a, T> {
     }
 
     pub fn current(&mut self) -> Option<&mut T> {
-        unsafe {
-            self.cur.map(|node| &mut (*node.as_ptr()).elem)
-        }
+        unsafe { self.cur.map(|node| &mut (*node.as_ptr()).elem) }
     }
 
     pub fn peek_next(&self) -> Option<&mut T> {
@@ -877,7 +873,9 @@ mod tests {
         assert_eq!(format!("{:?}", list), "[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]");
 
         let list: LinkedList<&str> = vec!["just", "one", "test", "more"]
-        .iter().copied().collect();
+            .iter()
+            .copied()
+            .collect();
         assert_eq!(format!("{:?}", list), r#"["just", "one", "test", "more"]"#);
     }
 
@@ -948,14 +946,20 @@ mod tests {
         cursor.move_next();
         cursor.splice_before(Some(7).into_iter().collect());
         cursor.splice_after(Some(8).into_iter().collect());
-        assert_eq!(m.iter().cloned().collect::<Vec<_>>(), vec![7, 1, 8, 2, 3, 4, 5, 6]);
+        assert_eq!(
+            m.iter().cloned().collect::<Vec<_>>(),
+            vec![7, 1, 8, 2, 3, 4, 5, 6]
+        );
         let mut cursor = m.cursor_mut();
         cursor.move_next();
         cursor.move_prev();
         cursor.splice_before(Some(9).into_iter().collect());
         cursor.splice_after(Some(10).into_iter().collect());
         check_links(&m);
-        assert_eq!(m.iter().cloned().collect::<Vec<_>>(), vec![10, 7, 1, 8, 2, 3, 4, 5, 6, 9]);
+        assert_eq!(
+            m.iter().cloned().collect::<Vec<_>>(),
+            vec![10, 7, 1, 8, 2, 3, 4, 5, 6, 9]
+        );
 
         let mut cursor = m.cursor_mut();
         cursor.move_next();
@@ -966,8 +970,10 @@ mod tests {
         cursor.splice_after(p);
         cursor.splice_before(q);
         check_links(&m);
-        assert_eq!(m.iter().cloned().collect::<Vec<_>>(),
-            &[200, 201, 202, 203, 10, 100, 101, 102, 103, 7, 1, 8, 2, 3, 4, 5, 6, 9]);
+        assert_eq!(
+            m.iter().cloned().collect::<Vec<_>>(),
+            &[200, 201, 202, 203, 10, 100, 101, 102, 103, 7, 1, 8, 2, 3, 4, 5, 6, 9]
+        );
 
         let mut cursor = m.cursor_mut();
         cursor.move_next();
@@ -984,11 +990,15 @@ mod tests {
         cursor.move_next();
         cursor.move_next();
         let tmp = cursor.split_after();
-        assert_eq!(tmp.iter().cloned().collect::<Vec<_>>(),
-            &[102, 103, 7, 1, 8, 2, 3, 4, 5, 6, 9]);
+        assert_eq!(
+            tmp.iter().cloned().collect::<Vec<_>>(),
+            &[102, 103, 7, 1, 8, 2, 3, 4, 5, 6, 9]
+        );
         check_links(&m);
-        assert_eq!(m.iter().cloned().collect::<Vec<_>>(),
-            &[200, 201, 202, 203, 10, 100, 101]);
+        assert_eq!(
+            m.iter().cloned().collect::<Vec<_>>(),
+            &[200, 201, 202, 203, 10, 100, 101]
+        );
     }
 
     fn check_links<T>(list: &LinkedList<T>) {
