@@ -100,4 +100,29 @@ impl<T> List<T> {
     pub fn peek_right_mut(&mut self) -> Option<&mut T> {
         self.right.peek_mut()
     }
+
+    pub fn go_left(&mut self) -> bool {
+        self.left.pop_node().map(|node| {
+            self.right.push_node(node);
+        }).is_some()
+    }
+
+    pub fn go_right(&mut self) -> bool {
+        self.right.pop_node().map(|node| {
+            self.left.push_node(node);
+        }).is_some()
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    #[test]
+    fn walk_aboot() {
+        let mut list = List::new();// [_]
+        list.push_left(0);// [0,_]
+        list.push_right(1);// [0,_,1]
+        assert_eq!(list.peek_left(), Some(&0));
+        assert_eq!(list.peek_right(), Some(&1));
+    }
 }
